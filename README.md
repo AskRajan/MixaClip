@@ -1,162 +1,126 @@
-# MixaClip
+<p align="center">
+  <img src="assets/logo.png" alt="MixaClip Banner" width="550"/>
+</p>
 
-An automated video clipping and rendering engine designed for gaming creators. MixaClip ingests long-form gameplay footage, detects high-retention viral moments, generates millisecond-accurate word-level verbatim subtitles, and programmatically renders 9:16 vertical Shorts using Remotion and FFmpeg.
+<p align="center">
+  <strong>Automated Gaming Highlights & 9:16 Vertical Shorts Pipeline</strong>
+</p>
 
----
-
-## Architecture & Stack
-
-MixaClip combines lightweight local AI models with programmatic video compositing:
-
-- **Video Ingestion:** `yt-dlp` (customizable resolutions and frame rates, up to 1080p @ 60fps / 4K).
-- **Speech Recognition:** `faster-whisper` (`small` model, CPU INT8 quantized) for millisecond-level word timestamp alignment without audio drift.
-- **Scene Detection:** `PySceneDetect` (content-aware cut and scene change detection).
-- **Video Slicing & Preprocessing:** `FFmpeg 7.x` (lossless cutting, stream extraction, facecam cropping).
-- **Shorts Rendering Engine:** `Remotion 4.x` (React-based declarative video composition at 1080x1920 @ 60fps).
-
----
-
-## Layout & Subtitle Specifications
-
-Every rendered clip follows a locked composition standard optimized for TikTok, YouTube Shorts, and Instagram Reels:
-
-### 1. Visual Composition (9:16 Vertical — 1080x1920)
-- **Top 30% Area:** Gamer Facecam (`object-fit: cover`, centered alignment).
-- **Middle Hook Badge:** Dynamic 3–4 word viral hook heading rendered inside a high-contrast pill badge between facecam and gameplay.
-- **Bottom 70% Area:** Scaled gameplay footage (`object-fit: cover`, centered).
-
-### 2. Subtitle Formatting (Verbatim SOP)
-- **Zero AI Paraphrasing:** 100% verbatim transcription. Preserves all gamer filler words (*bhai, yaar, arre, toh, uh, etc.*), slang, and unfinished dialogue.
-- **Chunking:** Strictly 2 to 3 words per screen, rendered on a single line.
-- **Typography:** 44px, Font Weight 900, pure white (`#FFFFFF`) with a clean 2px black stroke and drop shadow (no background box).
-- **Animation:** Synchronized spring-pop entrance on word transition.
-- **Language Support:** Hinglish (Hindi transcribed into Roman script) or Pure English.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python Version"/>
+  <img src="https://img.shields.io/badge/Remotion-4.x-0B84F3?style=flat-square&logo=react&logoColor=white" alt="Remotion"/>
+  <img src="https://img.shields.io/badge/FFmpeg-7.x-007808?style=flat-square&logo=ffmpeg&logoColor=white" alt="FFmpeg"/>
+  <img src="https://img.shields.io/badge/Whisper-INT8-orange?style=flat-square" alt="Whisper"/>
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License"/>
+</p>
 
 ---
 
-## Execution Pipeline
+## Overview
 
-The processing workflow incorporates two explicit user-approval gates before any irreversible file operations or heavy rendering occur:
+**MixaClip** is an open-source pipeline that turns long gameplay streams into viral, platform-ready 9:16 vertical shorts (TikTok, YouTube Shorts, Instagram Reels).
+
+It pairs lightweight speech-recognition and scene detection with a deterministic **Remotion 4.x** rendering stack, ensuring 100% verbatim subtitles and high-retention vertical framing.
+
+<p align="center">
+  <img src="assets/preview.png" alt="MixaClip Output Preview" width="300" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"/>
+  <br/>
+  <em>Sample 1080x1920 layout: 30% Facecam + Dynamic Viral Hook Badge + 70% Gameplay + Verbatim Subtitles</em>
+</p>
+
+---
+
+## Key Features
+
+| Feature | Description |
+| :--- | :--- |
+| **Smart Ingestion** | Downloads YouTube footage via `yt-dlp` with automatic quality gating (720p/1080p @ 60fps or 4K). |
+| **100% Verbatim Subtitles** | `faster-whisper` captures every spoken reaction, filler word (*bhai, yaar, arre*), and slang with millisecond word timestamps. |
+| **Strict 2–3 Word Pacing** | Subtitles appear in rapid, single-line bursts with spring-pop animations to maximize retention. |
+| **Dynamic Hook Badge** | Highlights punchy 3–4 word hooks between facecam and gameplay. |
+| **Browser Preview Gate** | Inspect audio sync, subtitles, and framing in Remotion Studio (`localhost:3000`) before rendering. |
+| **Headless Render** | One-command CLI rendering of production-ready 1080x1920 MP4 files at 60fps. |
+
+---
+
+## Execution Workflow
+
+MixaClip runs on a clear 5-step procedure with two strict approval gates:
 
 ```
-[Video Input URL]
-       │
-       ▼
-[Quality Gate] ──► (Verify resolution: 720p@60 / 1080p@60 / 4K)
-       │
-       ▼
-[Language Gate] ──► (Pure English or Roman Hinglish)
-       │
-       ▼
-[Extraction & Analysis] ──► (Verbatim Whisper transcript + PySceneDetect analysis)
-       │
-       ▼
-[Approval Gate 1] ──► (User selects count: 2, 5, 10, or 15 clips; approves timestamps & hook titles)
-       │
-       ▼
-[Remotion Studio Preview] ──► (Interactive browser review at http://localhost:3000)
-       │
-       ▼
-[Approval Gate 2] ──► (User requests adjustments or confirms export)
-       │
-       ▼
-[Headless Render] ──► (1080x1920 @ 60fps MP4 export to projects/[video_name]/final_shorts/)
-```
-
----
-
-## Directory Structure
-
-```
-MixaClip/
-├── .agents/
-│   └── skills/
-│       ├── clipper-tool/     # Main clipping workflow definition (SKILL.md)
-│       ├── setup/            # Automated machine setup guide (SKILL.md)
-│       └── yt-downloader/    # Downloader CLI operational guide (SKILL.md)
-├── Clipper Tool/
-│   ├── ffmpeg/               # Local FFmpeg 7.x binaries (bin/ffmpeg.exe)
-│   ├── remotion/             # Remotion React project root
-│   │   └── src/
-│   │       ├── GamerClip.tsx # Immutable video composition template
-│   │       ├── Root.tsx      # Composition registry & props mapping
-│   │       ├── index.ts      # Remotion entry point
-│   │       └── clipsData.json
-│   ├── public/               # Static assets & sliced media previews
-│   ├── package.json          # Node dependencies (Remotion 4.x)
-│   └── requirements.txt      # Python dependencies
-├── YT-Downloader/            # Video download scripts & yt-dlp binary
-├── video-list/               # Local staging folder for downloaded source videos
-├── projects/                 # Local workspace for video transcripts, slices, and renders
-├── AGENTS.md                 # Agent guidelines and workspace rules
-└── .gitignore
+[1. URL & Quality Gate] ──► Select 720p/1080p @ 60fps
+          │
+          ▼
+[2. Language Choice]   ──► Pure English or Roman Hinglish
+          │
+          ▼
+[3. AI Extract & Hooks] ──► Full verbatim transcript + scenes (User approves moments)
+          │
+          ▼
+[4. Browser Preview]   ──► Live review at http://localhost:3000
+          │
+          ▼
+[5. Headless Export]   ──► 1080x1920 @ 60fps MP4 rendered on user confirmation
 ```
 
 ---
 
-## Installation & Setup
+## Quick Start
 
-### Prerequisites
-- **Python:** 3.10 or higher
-- **Node.js:** 18.0.0 or higher (with npm)
-- **FFmpeg:** 7.x (available on system PATH or inside `Clipper Tool/ffmpeg/bin/`)
+### 1. Prerequisites
+- **Python 3.10+**
+- **Node.js 18+** & npm
+- **FFmpeg 7.x**
 
-### 1. Clone the Repository
+### 2. Setup
 ```bash
-git clone https://github.com/your-username/mixaclip.git
-cd mixaclip
-```
+# Clone the repository
+git clone https://github.com/AskRajan/MixaClip.git
+cd MixaClip
 
-### 2. Set Up Python Environment
-Create and activate a virtual environment inside `Clipper Tool/`:
-
-```bash
+# Setup Python environment
 cd "Clipper Tool"
 python -m venv venv
-
-# Windows (PowerShell):
 .\venv\Scripts\Activate.ps1
-
-# Linux / macOS:
-source venv/bin/activate
-```
-
-Install the required Python packages:
-```bash
 pip install -r requirements.txt
-```
 
-### 3. Install Remotion Dependencies
-Within the `Clipper Tool/` directory:
-```bash
+# Install Remotion dependencies
 npm install
 ```
 
-### 4. Verify External Tools
-- **yt-dlp:** Ensure `YT-Downloader/yt-dlp.exe` is present or install globally via `pip install yt-dlp`.
-- **FFmpeg:** Verify FFmpeg via `ffmpeg -version`.
+### 3. Usage
+```bash
+# 1. Download source footage
+python ../YT-Downloader/download.py "<YOUTUBE_URL>"
+
+# 2. Preview clips in browser
+npx remotion preview remotion/src/index.ts --port=3000
+
+# 3. Render final shorts (Headless MP4)
+npx remotion render GamerClipShort "projects/<project_name>/final_shorts/clip_01.mp4"
+```
+
+<details>
+<summary><strong>Repository Layout (Click to expand)</strong></summary>
+
+```
+MixaClip/
+├── .agents/skills/       # Agent workflow and setup SOPs
+├── Clipper Tool/
+│   ├── remotion/         # React Remotion compositions & GamerClip template
+│   ├── public/           # Static preview assets
+│   ├── requirements.txt  # Python AI dependencies (faster-whisper, scenedetect)
+│   └── package.json      # Remotion 4.x dependencies
+├── YT-Downloader/        # Video download engine (yt-dlp)
+├── video-list/           # Local storage for source videos (git-ignored)
+├── projects/             # Local project outputs & transcript cache (git-ignored)
+├── assets/               # Branding assets & preview frames
+└── README.md
+```
+</details>
 
 ---
 
-## Usage
+## License
 
-### 1. Download Source Video
-Download a target gaming video into `video-list/` (defaults to 1080p @ 60fps):
-```bash
-python YT-Downloader/download.py "<YOUTUBE_URL>"
-```
-
-### 2. Start Remotion Preview Server
-Preview compositions, verify subtitle sync, and inspect framing live in the browser:
-```bash
-cd "Clipper Tool"
-npx remotion preview remotion/src/index.ts --port=3000
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### 3. Render Final Shorts (Headless)
-Export an approved composition to vertical MP4:
-```bash
-cd "Clipper Tool"
-npx remotion render GamerClipShort "projects/[video_name]/final_shorts/clip_01.mp4" --props='...'
-```
+This project is open-source under the [MIT License](LICENSE).
