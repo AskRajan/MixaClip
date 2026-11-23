@@ -42,17 +42,6 @@ export const GamerClipTemplate: React.FC<GamerClipProps> = ({
   const faceImg = facecamSource || staticFile("gamer_face.jpg");
   const gameImg = gameplaySource || staticFile("gameplay.jpg");
 
-  // Subtle breathing/camera dynamics on gameplay
-  const gameScale = interpolate(
-    frame,
-    [0, Math.floor(durationInFrames / 2), durationInFrames],
-    [1.0, 1.03, 1.0],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    }
-  );
-
   // Entrance spring animation for the hook badge
   const hookScale = spring({
     frame,
@@ -195,7 +184,6 @@ export const GamerClipTemplate: React.FC<GamerClipProps> = ({
                 height: "100%",
                 objectFit: "cover",
                 objectPosition: "center center",
-                transform: `scale(${gameScale})`,
               }}
             />
           ) : (
@@ -206,8 +194,6 @@ export const GamerClipTemplate: React.FC<GamerClipProps> = ({
                 height: "100%",
                 objectFit: "cover",
                 objectPosition: "center top",
-                transform: `scale(${gameScale})`,
-                translate: "10px -12.5px"
               }}
             />
           )}
