@@ -23,9 +23,14 @@
 It pairs lightweight speech-recognition and scene detection with a deterministic **Remotion 4.x** rendering stack, ensuring 100% verbatim subtitles and high-retention vertical framing.
 
 <p align="center">
-  <img src="assets/preview.png" alt="MixaClip Output Preview" width="300" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"/>
-  <br/>
-  <em>Sample 1080x1920 layout: 30% Facecam + Dynamic Viral Hook Badge + 70% Gameplay + Verbatim Subtitles</em>
+  <img src="assets/sample_1.jpg" alt="MixaClip Sample 1" width="31%"/>
+  &nbsp;
+  <img src="assets/sample_2.jpg" alt="MixaClip Sample 2" width="31%"/>
+  &nbsp;
+  <img src="assets/sample_3.jpg" alt="MixaClip Sample 3" width="31%"/>
+</p>
+<p align="center">
+  <em>Sample 1080x1920 Shorts: 30% Facecam + Dynamic Viral Hook Badge + 70% Gameplay + Verbatim Subtitles</em>
 </p>
 
 ---
