@@ -10,6 +10,7 @@ ENV/
 env.bak/
 venv.bak/
 Clipper Tool/venv/
+clipper-tool/venv/
 
 # Node & Remotion
 node_modules/
@@ -18,14 +19,18 @@ yarn-debug.log*
 yarn-error.log*
 .remotion/
 Clipper Tool/remotion/node_modules/
+clipper-tool/node_modules/
+clipper-tool/remotion/node_modules/
 
 # Binaries & Tool Executables (GitHub limits files to 100MB)
 *.exe
 Clipper Tool/ffmpeg/
+clipper-tool/ffmpeg/
 YT-Downloader/yt-dlp.exe
 
 # AI Models (Whisper weights exceed GitHub 100MB limit)
 Clipper Tool/models/
+clipper-tool/models/
 *.bin
 
 # Video & Audio Files (Do not commit heavy media to GitHub)

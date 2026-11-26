@@ -12,7 +12,7 @@ Guide and automated procedure for an agent to set up the Cliper repository on a 
 Before starting, verify the following runtimes on the host machine:
 1. **Python 3.10+**: `python --version`
 2. **Node.js 18+ & npm**: `node --version` and `npm --version`
-3. **FFmpeg 7.x**: Check `Clipper Tool/ffmpeg/bin/ffmpeg.exe` or system `ffmpeg -version`.
+3. **FFmpeg 7.x**: Check `clipper-tool/ffmpeg/bin/ffmpeg.exe` or system `ffmpeg -version`.
 
 ---
 

@@ -5,13 +5,13 @@ description: Transcribe gamer MP4 videos, identify best moments, present timesta
 
 # Clipper Tool Workflow
 
-Process gamer MP4 videos into high-engagement vertical shorts using `Clipper Tool/`.
+Process gamer MP4 videos into high-engagement vertical shorts using `clipper-tool/`.
 
 ## Stack
-- **Whisper:** `Clipper Tool/venv` (`faster-whisper` `small` model, CPU INT8)
+- **Whisper:** `clipper-tool/venv` (`faster-whisper` `small` model, CPU INT8)
 - **Scenes:** `PySceneDetect`
-- **Video & Editing:** `Clipper Tool/ffmpeg/bin/ffmpeg.exe`, `Remotion 4.x`
-- **Locked Template:** `Clipper Tool/remotion/src/GamerClip.tsx` (immutable)
+- **Video & Editing:** `clipper-tool/ffmpeg/bin/ffmpeg.exe`, `Remotion 4.x`
+- **Locked Template:** `clipper-tool/remotion/src/GamerClip.tsx` (immutable)
 - **Editing Specification:** Refer to `editing-skills.md` for exact facecam cropping, gameplay scaling, and Hinglish rules.
 
 ## Output Organization
