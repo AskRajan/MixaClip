@@ -11,7 +11,9 @@ Process gamer MP4 videos into high-engagement vertical shorts using `clipper-too
 - **Whisper:** `clipper-tool/venv` (`faster-whisper` `small` model, CPU INT8)
 - **Scenes:** `PySceneDetect`
 - **Video & Editing:** `clipper-tool/ffmpeg/bin/ffmpeg.exe`, `Remotion 4.x`
-- **Locked Template:** `clipper-tool/remotion/src/GamerClip.tsx` (immutable)
+- **Available Templates:**
+  - **Template 1: Split-Screen (`GamerClipTemplate`)** in `clipper-tool/remotion/src/GamerClip.tsx` (Top 30% facecam, middle hook badge, bottom 70% gameplay).
+  - **Template 2: Corner PIP Overlay (`GamerOverlayTemplate`)** in `clipper-tool/remotion/src/GamerOverlayTemplate.tsx` (Top 15% & bottom 15% empty space, full-width gameplay, top-right 400x250px facecam PIP, floating bottom-mid word-by-word captions with active yellow highlight).
 - **Editing Specification:** Refer to `editing-skills.md` for exact facecam cropping, gameplay scaling, and Hinglish rules.
 
 ## Output Organization
@@ -20,7 +22,7 @@ All work for a video is isolated in `projects/[video_name]/`:
 - `projects/[video_name]/final_shorts/*.mp4`
 The core template and tools are never modified.
 
-## Procedure (5-Step Execution Workflow)
+## Procedure (6-Step Execution Workflow)
 
 1. **Step 1: Receive Video URL & Quality Selection (Download Gate):**
    - Input: Video URL provided by the user.
@@ -37,11 +39,17 @@ The core template and tools are never modified.
      * *Option 1: Pure English*
      * *Option 2: Hinglish (Hindi + English)*
 
-3. **Step 3: Extract Verbatim Transcript & Identify Viral Moments (Combined Step):**
+3. **Step 3: Template Selection Gate (Mandatory User Choice):**
+   - **Ask the user** which layout template they want to use for the clips:
+     * *Option 1: Split-Screen Template (`GamerClipTemplate`)* — Top 30% full-width facecam, middle catchy hook banner, bottom 70% gameplay with centered subtitles.
+     * *Option 2: Corner PIP Overlay Template (`GamerOverlayTemplate`)* — Top 15% & bottom 15% clean empty space, full-width gameplay, sleek top-right corner facecam (400×250px), and bottom-mid floating word-by-word captions (active word in bright yellow).
+   - **WAIT:** Do not configure compositions until the user chooses their preferred template.
+
+4. **Step 4: Extract Verbatim Transcript & Identify Viral Moments (Combined Step):**
    - **Transcript Generation (Strict Verbatim SOP):**
      - Zero AI paraphrasing/summarization (100% verbatim, retain all filler words like *bhai, yaar, arre*, slangs, and reactions).
      - Forced word-level millisecond alignment.
-     - Hinglish Roman script, Title Case, strictly 2-3 words per screen, center aligned 44px with spring pop entrance.
+     - Hinglish Roman script, Title Case, strictly 2-3 words per screen, center aligned 44px with spring pop entrance (or word-by-word if Template 2 is selected).
      - Saved in `projects/[video_name]/transcript.json`.
    - **Viral Moments Selection & Approval Gate 1:**
      - Ask user for desired clip count: **2, 5, 10, or 15 clips**.
@@ -49,15 +57,15 @@ The core template and tools are never modified.
      - Present proposed moments (start/end time, duration 25–30s, transcript text, viral hook badge) for user approval.
      - **WAIT:** No video editing or cutting begins until user approves the proposed moments.
 
-4. **Step 4: Build Clips & Interactive Browser Preview (Approval Gate 2):**
-   - Once moments are approved, configure them in Remotion Studio.
+5. **Step 5: Build Clips & Interactive Browser Preview (Approval Gate 2):**
+   - Once moments and template are approved, configure them in Remotion Studio using the chosen template.
    - Serve live interactive preview at `http://localhost:3000`.
-   - User reviews playback, hook badges, and subtitle timing. Apply any requested adjustments.
+   - User reviews playback, facecam positioning, and subtitle timing. Apply any requested adjustments.
 
-5. **Step 5: Final MP4 Export (Strict Permission Rule):**
+6. **Step 6: Final MP4 Export (Strict Permission Rule):**
    - **NEVER export automatically.**
    - Only when user explicitly commands export (e.g., *"एक्सपोर्ट करो"* / *"रेंडर करो"*), execute headless render:
      ```bash
-     npx remotion render GamerClipShort "projects/[video_name]/final_shorts/clip_01.mp4" --props='...'
+     npx remotion render [CompositionId] "projects/[video_name]/final_shorts/clip_01.mp4" --props='...'
      ```
    - Target format: 9:16 vertical (`1080x1920` @ 60fps), 25–30 seconds.
