@@ -45,26 +45,28 @@ This document defines the strict, standard production pipeline for turning gamin
 
 ---
 
-## 3. FFmpeg Video Extraction & Cropping Rules
+## 3. FFmpeg Video Extraction, Scaling & Aspect Ratio Preservation
 
-### A. Gamer Facecam Extraction (Top 30% Screen)
-From the source 1920x1080 landscape video, detect and crop the gamer webcam box.
-* For GTA 6 source videos:
-  - **Coordinates:** `x=1524`, `y=126`, `w=367`, `h=225`
-  - **FFmpeg Filter:** `crop=367:225:1524:126,scale=1080:576:flags=lanczos`
-  - **Audio:** Audio can be included or mapped to avoid multi-audio conflicts.
+### A. Aspect Ratio Integrity (STRICT RULE)
+- **Zero Stretching:** Never stretch, squish, or distort gameplay or facecam footage.
+- **Proportional Scaling with Center Crop:** Always use `scale={w}:{h}:force_original_aspect_ratio=increase,crop={w}:{h},setsar=1` so footage fills its allocated vertical slot while 100% maintaining its native aspect ratio.
 
-### B. Real Gameplay Extraction (Bottom 70% Screen)
-* From the source 1920x1080 landscape video:
-  - **FFmpeg Filter:** `crop=1080:840:420:240,scale=1080:1344:flags=lanczos` (or full center crop scaled to 1080x1344)
-  - **Audio:** Original synchronized game + commentary audio track.
+### B. Gamer Facecam Extraction (Top 30% Screen)
+From the source landscape video, crop the gamer webcam area:
+* For GTA 6 / standard facecam streams:
+  - **Coordinates:** e.g., `x=1524`, `y=126`, `w=367`, `h=225`
+  - **FFmpeg Filter:** `crop=367:225:1524:126,scale=720:384:force_original_aspect_ratio=increase,crop=720:384,setsar=1`
+
+### C. Real Gameplay Extraction (Bottom 70% Screen)
+* From the source landscape video:
+  - **FFmpeg Filter:** `scale=720:896:force_original_aspect_ratio=increase,crop=720:896,setsar=1`
+  - **Audio:** Synchronized original game audio and commentary.
 
 ---
 
-## 4. Remotion Assembly
-- Pass real video paths into `GamerClipTemplate`:
-  - `facecamSource`: Path or static URL to the facecam `.mp4`
-  - `gameplaySource`: Path or static URL to the gameplay `.mp4`
-  - `hookText`: 3–4 words single-line uppercase hook badge
-  - `subtitles`: Array of `{ text, startFrame, endFrame }` in Hinglish.
-- Audio and video stay 100% in sync at 60 fps.
+## 4. Native FFmpeg & ASS Subtitle Pipeline
+- All clips are composited natively via `fast_exporter.py` in FFmpeg C++:
+  - Stacks facecam (top 30%) and gameplay (bottom 70%) vertically via `vstack`.
+  - Burn-in ASS subtitles (`.ass`) with bold uppercase hook badge pill and 2-3 word rapid dialogue pacing.
+  - Encoded with `-c:v libx264 -preset ultrafast -crf 20` for ~8-10s per clip export directly into `Output/Project_X/`.
+  - Browser preview and Remotion are eliminated to ensure zero RAM bloat and crash-free rendering on low-end laptops.

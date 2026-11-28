@@ -1,6 +1,7 @@
-# Cliper
-- Save all downloads to `video-list/`.
-- Downloader tools live in `YT-Downloader/`.
-- Video clipping stack lives in `clipper-tool/` (Remotion 4.x, FFmpeg 7.x, faster-whisper 1.2.x, PySceneDetect 0.6.x).
-- Download command: `python YT-Downloader/download.py "<URL>"` (defaults to 1080p @ 60fps MP4)
-- Setup instructions: Refer to `.agents/skills/setup/SKILL.md` for setting up python venv, npm dependencies, and binaries.
+# MixaClip
+- Media downloads live in `storage/downloads/`.
+- Local portable binaries live in `bin/` (FFmpeg, yt-dlp).
+- Source package lives in `src/mixaclip/`.
+- Master output vertical clips are exported to `storage/output/Project_1/`, `storage/output/Project_2/`, etc.
+- Unified command: `python -m mixaclip <command>` (supports `check`, `run`, `export`).
+- Aspect ratio rule: Never stretch gameplay video; preserve natural aspect ratio with proportional scaling and center cropping (`force_original_aspect_ratio=increase,crop=...`).

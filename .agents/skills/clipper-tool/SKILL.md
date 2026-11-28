@@ -1,6 +1,6 @@
 ---
 name: clipper-tool
-description: Transcribe gamer MP4 videos, identify best moments, present timestamps for user approval, and edit clips.
+description: Transcribe gamer MP4 videos, identify best viral moments, present timestamps & hooks for user approval, and ultra-fast export clips via native FFmpeg without browser preview.
 ---
 
 # Clipper Tool Workflow
@@ -10,62 +10,37 @@ Process gamer MP4 videos into high-engagement vertical shorts using `clipper-too
 ## Stack
 - **Whisper:** `clipper-tool/venv` (`faster-whisper` `small` model, CPU INT8)
 - **Scenes:** `PySceneDetect`
-- **Video & Editing:** `clipper-tool/ffmpeg/bin/ffmpeg.exe`, `Remotion 4.x`
+- **Video & Compositing:** `clipper-tool/ffmpeg/bin/ffmpeg.exe` (Native ultra-fast pipeline, ~8s per clip)
+- **Subtitles & Badges:** Advanced SubStation Alpha (`.ass`) with crisp drop-shadow and bold pill styling.
 - **Available Templates:**
-  - **Template 1: Split-Screen (`GamerClipTemplate`)** in `clipper-tool/remotion/src/GamerClip.tsx` (Top 30% facecam, middle hook badge, bottom 70% gameplay).
-  - **Template 2: Corner PIP Overlay (`GamerOverlayTemplate`)** in `clipper-tool/remotion/src/GamerOverlayTemplate.tsx` (Top 15% & bottom 15% empty space, full-width gameplay, top-right 400x250px facecam PIP, floating bottom-mid word-by-word captions with active yellow highlight).
-- **Editing Specification:** Refer to `editing-skills.md` for exact facecam cropping, gameplay scaling, and Hinglish rules.
+  - **Template 1: Split-Screen (`GamerClipTemplate`)** (Top 30% facecam, middle hook badge, bottom 70% gameplay).
+  - **Template 2: Corner PIP Overlay (`GamerOverlayTemplate`)** (Top 15% & bottom 15% empty space, full-width gameplay, top-right 400x250px facecam PIP, floating bottom-mid word-by-word captions).
+- **Aspect Ratio Rule (STRICT):** Never stretch or squish gameplay video. Always preserve natural aspect ratio using proportional scaling (`force_original_aspect_ratio=increase,crop=...`).
 
 ## Output Organization
-All work for a video is isolated in `projects/[video_name]/`:
-- `projects/[video_name]/transcript.json` (strictly Hinglish subtitles in 2-3 word audio-synced intervals)
-- `projects/[video_name]/final_shorts/*.mp4`
-The core template and tools are never modified.
+All exported clips are systematically stored in project subfolders inside `storage/output/`:
+- `storage/output/Project_1/*.mp4`
+- `storage/output/Project_2/*.mp4`
+Each run increments the project folder automatically.
 
-## Procedure (6-Step Execution Workflow)
+## Procedure (5-Step Execution Workflow)
 
 1. **Step 1: Receive Video URL & Quality Selection (Download Gate):**
    - Input: Video URL provided by the user.
-   - **Quality Check:**
-     - If the user explicitly specified resolution/FPS (e.g., 720p, 1080p, 4K), use that directly (download 4K if system hardware/format supports it).
-     - If quality is **not** specified, **ask the user** to choose:
-       * *Option 1: 720p @ 60fps*
-       * *Option 2: 1080p @ 60fps*
-   - Download the video into `video-list/` via `YT-Downloader/download.py "<URL>"`.
+   - Quality: 720p @ 30fps (Recommended for low-end / fast export) or 1080p @ 60fps.
+   - Download into `storage/downloads/` via `python -m mixaclip run "<URL>" --quality 720p30`.
 
-2. **Step 2: Language Check:**
-   - If user specified a language, use it.
-   - If user did **not** mention a language, **ask the user** before proceeding:
-     * *Option 1: Pure English*
-     * *Option 2: Hinglish (Hindi + English)*
+2. **Step 2: Language & Template Selection:**
+   - Language: Roman Hinglish or English.
+   - Template: Split-Screen or Corner PIP.
 
-3. **Step 3: Template Selection Gate (Mandatory User Choice):**
-   - **Ask the user** which layout template they want to use for the clips:
-     * *Option 1: Split-Screen Template (`GamerClipTemplate`)* — Top 30% full-width facecam, middle catchy hook banner, bottom 70% gameplay with centered subtitles.
-     * *Option 2: Corner PIP Overlay Template (`GamerOverlayTemplate`)* — Top 15% & bottom 15% clean empty space, full-width gameplay, sleek top-right corner facecam (400×250px), and bottom-mid floating word-by-word captions (active word in bright yellow).
-   - **WAIT:** Do not configure compositions until the user chooses their preferred template.
+3. **Step 3: Extract Verbatim Transcript & Identify Viral Moments:**
+   - 100% verbatim speech with filler words (*bhai, yaar, arre*), millisecond word alignment, strictly 2-3 words per chunk.
+   - High-retention gamer moments (25-30s each) with punchy 3-4 word hook badges.
 
-4. **Step 4: Extract Verbatim Transcript & Identify Viral Moments (Combined Step):**
-   - **Transcript Generation (Strict Verbatim SOP):**
-     - Zero AI paraphrasing/summarization (100% verbatim, retain all filler words like *bhai, yaar, arre*, slangs, and reactions).
-     - Forced word-level millisecond alignment.
-     - Hinglish Roman script, Title Case, strictly 2-3 words per screen, center aligned 44px with spring pop entrance (or word-by-word if Template 2 is selected).
-     - Saved in `projects/[video_name]/transcript.json`.
-   - **Viral Moments Selection & Approval Gate 1:**
-     - Ask user for desired clip count: **2, 5, 10, or 15 clips**.
-     - Concurrently analyze transcript and scene changes for crazy gamer reactions, fight scenes, clutch moments, and viral hooks.
-     - Present proposed moments (start/end time, duration 25–30s, transcript text, viral hook badge) for user approval.
-     - **WAIT:** No video editing or cutting begins until user approves the proposed moments.
+4. **Step 4: User Approval Gate (Mandatory Permission Step):**
+   - Present moments table for user review & confirmation.
 
-5. **Step 5: Build Clips & Interactive Browser Preview (Approval Gate 2):**
-   - Once moments and template are approved, configure them in Remotion Studio using the chosen template.
-   - Serve live interactive preview at `http://localhost:3000`.
-   - User reviews playback, facecam positioning, and subtitle timing. Apply any requested adjustments.
-
-6. **Step 6: Final MP4 Export (Strict Permission Rule):**
-   - **NEVER export automatically.**
-   - Only when user explicitly commands export (e.g., *"एक्सपोर्ट करो"* / *"रेंडर करो"*), execute headless render:
-     ```bash
-     npx remotion render [CompositionId] "projects/[video_name]/final_shorts/clip_01.mp4" --props='...'
-     ```
-   - Target format: 9:16 vertical (`1080x1920` @ 60fps), 25–30 seconds.
+5. **Step 5: Ultra-Fast Direct FFmpeg Export:**
+   - Run: `python -m mixaclip export --moments "storage/cache/<Project_Name>/moments.json"`
+   - Automatically outputs all clips into `storage/output/Project_X/` at ~8 to 10 seconds per clip.

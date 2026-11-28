@@ -1,0 +1,5 @@
+faster-whisper==1.2.1
+scenedetect[opencv]==0.7.3
+yt-dlp>=2025.01.01
+indic-transliteration>=2.3.56
+av>=14.0.0
