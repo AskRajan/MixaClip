@@ -3,16 +3,16 @@ name: setup
 description: Set up, configure, and verify the Cliper local development environment on a new machine.
 ---
 
-# Cliper Local Setup Skill
+# MixaClip Local Setup Skill
 
-Guide and automated procedure for an agent to set up the Cliper repository on a user's local machine after cloning.
+Guide and automated procedure for an agent to set up the MixaClip repository on a user's local machine after cloning.
 
 ## Prerequisites Check
 
 Before starting, verify the following runtimes on the host machine:
 1. **Python 3.10+**: `python --version`
-2. **FFmpeg 7.x+**: Check `clipper-tool/ffmpeg/bin/ffmpeg.exe` or system `ffmpeg -version`.
-3. (Optional) **yt-dlp**: Check `YT-Downloader/yt-dlp.exe` or PATH.
+2. **FFmpeg 7.x+**: Check `bin/ffmpeg/bin/ffmpeg.exe` or system `ffmpeg -version`.
+3. (Optional) **yt-dlp**: Check `bin/yt-dlp.exe` or system PATH.
 
 ---
 

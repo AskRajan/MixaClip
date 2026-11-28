@@ -5,16 +5,16 @@ description: Transcribe gamer MP4 videos, identify best viral moments, present t
 
 # Clipper Tool Workflow
 
-Process gamer MP4 videos into high-engagement vertical shorts using `clipper-tool/`.
+Process gamer MP4 videos into high-engagement vertical shorts using `mixaclip`.
 
 ## Stack
-- **Whisper:** `clipper-tool/venv` (`faster-whisper` `small` model, CPU INT8)
+- **Whisper:** `venv` (`faster-whisper` `small` model, CPU INT8)
 - **Scenes:** `PySceneDetect`
-- **Video & Compositing:** `clipper-tool/ffmpeg/bin/ffmpeg.exe` (Native ultra-fast pipeline, ~8s per clip)
+- **Video & Compositing:** `bin/ffmpeg/bin/ffmpeg.exe` or system PATH (Native ultra-fast pipeline, ~8s per clip)
 - **Subtitles & Badges:** Advanced SubStation Alpha (`.ass`) with crisp drop-shadow and bold pill styling.
 - **Available Templates:**
-  - **Template 1: Split-Screen (`GamerClipTemplate`)** (Top 30% facecam, middle hook badge, bottom 70% gameplay).
-  - **Template 2: Corner PIP Overlay (`GamerOverlayTemplate`)** (Top 15% & bottom 15% empty space, full-width gameplay, top-right 400x250px facecam PIP, floating bottom-mid word-by-word captions).
+  - **Template 1: Split-Screen (`split_screen.py`)** (Top 30% facecam, middle hook badge, bottom 70% gameplay).
+  - **Template 2: Corner PIP Overlay (`pip_overlay.py`)** (Top 15% & bottom 15% empty space, full-width gameplay, top-right facecam PIP, floating bottom-mid word-by-word captions).
 - **Aspect Ratio Rule (STRICT):** Never stretch or squish gameplay video. Always preserve natural aspect ratio using proportional scaling (`force_original_aspect_ratio=increase,crop=...`).
 
 ## Output Organization

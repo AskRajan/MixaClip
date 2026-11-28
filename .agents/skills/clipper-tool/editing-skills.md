@@ -65,8 +65,8 @@ From the source landscape video, crop the gamer webcam area:
 ---
 
 ## 4. Native FFmpeg & ASS Subtitle Pipeline
-- All clips are composited natively via `fast_exporter.py` in FFmpeg C++:
+- All clips are composited natively via `python -m mixaclip export` (`mixaclip.core.exporter`) in FFmpeg C++:
   - Stacks facecam (top 30%) and gameplay (bottom 70%) vertically via `vstack`.
   - Burn-in ASS subtitles (`.ass`) with bold uppercase hook badge pill and 2-3 word rapid dialogue pacing.
-  - Encoded with `-c:v libx264 -preset ultrafast -crf 20` for ~8-10s per clip export directly into `Output/Project_X/`.
+  - Encoded with `-c:v libx264 -preset ultrafast -crf 20` for ~8-10s per clip export directly into `storage/output/Project_X/`.
   - Browser preview and Remotion are eliminated to ensure zero RAM bloat and crash-free rendering on low-end laptops.
